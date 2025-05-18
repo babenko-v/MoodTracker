@@ -1,5 +1,5 @@
 // src/services/AuthService/auth.js
-import api from "../../../services/AuthService/interceptor.jsx";
+import api from '../AuthService/interceptor.jsx'
 
 // логін і збереження обох токенів
 export const login = async (email, password) => {

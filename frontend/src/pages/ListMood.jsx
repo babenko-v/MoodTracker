@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import api from "../../../services/AuthService/interceptor.jsx";
+import api from '../services/AuthService/interceptor.jsx'
 
 
 function MoodList() {
@@ -7,9 +7,10 @@ function MoodList() {
 
 
     useEffect(() => {
-        api.get('projects/')
+        api.get('mood/')
             .then(response => {
                 setMood(response.data);
+                console.log(response.data);
             })
             .catch(error => {
                 console.log(error);
@@ -19,12 +20,12 @@ function MoodList() {
 
 
     return (
-        <div className="container-fluid bodys">
-            <div className="bg-black">
+        <div className="bodys">
+            <div className="bg">
                 <h1>Users</h1>
                 <ul>
-                    {mood.map((project) => (
-                        <li key={project.id}>{project.username} - ${project.email}</li>
+                    {mood.map((mood) => (
+                        <li key={mood.id}>{mood.mood_day} - ${mood.note}</li>
                     ))}
                 </ul>
             </div>
