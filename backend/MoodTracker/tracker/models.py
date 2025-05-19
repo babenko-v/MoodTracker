@@ -1,5 +1,6 @@
 # models.py
 from datetime import datetime, date, time, timedelta
+from client.models import Client
 
 from django.db import models
 from django.utils import timezone
@@ -32,6 +33,12 @@ class Mood(models.Model):
     mood_day = models.ForeignKey(
         TypeOfMood,
         related_name='mood_records',
+        on_delete=models.PROTECT
+    )
+
+    user_id = models.ForeignKey(
+        Client,
+        related_name='user',
         on_delete=models.PROTECT
     )
     date = models.DateTimeField(auto_now_add=True)

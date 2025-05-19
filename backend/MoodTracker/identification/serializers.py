@@ -19,10 +19,9 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'username',  'password', 'password2')
+        fields = ('email', 'password', 'password2')
         extra_kwargs = {
-            'email': {'required': True, 'allow_blank': False},
-            'username': {'required': True, 'allow_blank': False}
+            'email': {'required': True, 'allow_blank': False}
         }
 
     def validate(self, attrs):
@@ -33,9 +32,6 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         if User.objects.filter(email=attrs['email']).exists():
             raise serializers.ValidationError({"email": "Пользователь с таким email уже существует."})
 
-        # Проверка уникальности username
-        if User.objects.filter(username=attrs['username']).exists():
-            raise serializers.ValidationError({"username": "Пользователь с таким никнеймом уже существует."})
 
         return attrs
 
@@ -45,8 +41,6 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         # Создаем пользователя
         user = User.objects.create(
             email=validated_data['email'],
-            username=validated_data['username'],
-            # programming_area=validated_data['programming_area']
         )
         user.set_password(validated_data['password'])
         user.save()

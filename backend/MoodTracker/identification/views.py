@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from rest_framework import status
 from .serializers import UserRegisterSerializer
 from rest_framework.response import Response
-from .utils import generate_tokens_and_set_cookie
+from .services import AuthService
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -21,7 +21,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         user = authenticate(request, email=email, password=password)
         if user is not None:
 
-            return generate_tokens_and_set_cookie(user)
+            return AuthService.generate_tokens_and_set_cookie(user)
         else:
             return JsonResponse({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -45,5 +45,5 @@ class UserRegistrationView(GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            return generate_tokens_and_set_cookie(user)
+            return AuthService.generate_tokens_and_set_cookie(user)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
