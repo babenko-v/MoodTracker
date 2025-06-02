@@ -1,61 +1,78 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState } from 'react';
-import { login } from "../../services/AuthService/Login.jsx"
+import { useNavigate } from 'react-router-dom';
+import { login } from "../../services/AuthService/Login.jsx";
 
-function Login() {
-    const [loginForm, setLoginForm] = useState({
-        email: '',
-        password: ''
-    });
+export default function Login() {
+    const navigate = useNavigate();
+    const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+    const [error, setError] = useState(null);
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async e => {
         e.preventDefault();
-
+        setError(null);
         try {
-            // Вызываем функцию логина
             await login(loginForm.email, loginForm.password);
-            console.log('Успешный вход');
-        } catch (error) {
-            console.error('Ошибка при входе:', error);
+            navigate("/mood/today");
+        } catch (err) {
+            setError("Невірний email або пароль");
         }
-    }
+    };
 
     return (
-        <div className="container mx-auto cont">
-            <form action="#" method="POST" onSubmit={handleSubmit}>  {/* Здесь изменяем onChange на onSubmit */}
-                <div className="master_2">
-                    <h2 className="header_regist">Registration</h2>
-                    <div className="input">
-                        <input
-                            className="form-control mx-auto my-3"
-                            placeholder="Ваш email"
-                            type="email"
-                            name="useremail"
-                            value={loginForm.email}
-                            onChange={(event) => setLoginForm(prev => ({...prev, email: event.target.value}))}
-                        />
+        <div className="container py-5">
+            <form
+                onSubmit={handleSubmit}
+                className="mx-auto p-4 shadow-sm bg-white"
+                style={{ maxWidth: 400 }}
+            >
+                <h2 className="text-center mb-4">Login</h2>
 
-                        <input
-                            className="form-control mx-auto my-3"
-                            placeholder="Пароль"
-                            type="password"
-                            name="password"
-                            value={loginForm.password}
-                            onChange={(event) => setLoginForm(prev => ({...prev, password: event.target.value}))}
-                        />
+                {error && (
+                    <div className="alert alert-danger">
+                        {error}
                     </div>
-                    <div className="md-mx-auto btn-reg">
-                        <button className='button_left' type="submit">Войти</button> {/* Кнопка для отправки */}
-                        <button className='button_right' type="reset">Уже маю аккаунт</button>
-                    </div>
+                )}
+
+                <div className="mb-3">
+                    <label htmlFor="email" className="form-label">Email</label>
+                    <input
+                        id="email"
+                        type="email"
+                        className="form-control"
+                        placeholder="Ваш email"
+                        value={loginForm.email}
+                        onChange={e => setLoginForm(f => ({ ...f, email: e.target.value }))}
+                        required
+                    />
+                </div>
+
+                <div className="mb-3">
+                    <label htmlFor="password" className="form-label">Пароль</label>
+                    <input
+                        id="password"
+                        type="password"
+                        className="form-control"
+                        placeholder="Пароль"
+                        value={loginForm.password}
+                        onChange={e => setLoginForm(f => ({ ...f, password: e.target.value }))}
+                        required
+                    />
+                </div>
+
+                <div className="d-flex justify-content-between">
+                    <button type="submit" className="btn btn-primary">
+                        Войти
+                    </button>
+                    <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => navigate("/registration")}
+                    >
+                        Реєстрація
+                    </button>
                 </div>
             </form>
-
-            <div>
-                <h1>Email: {loginForm.email}</h1>
-                <h1>Password: {loginForm.password}</h1>
-            </div>
         </div>
     );
 }
-
-export default Login;

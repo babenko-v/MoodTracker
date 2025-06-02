@@ -36,9 +36,9 @@ class MoodViewSet(ModelViewSet):
                 {"detail": "Параметр `date` обов’язковий у форматі YYYY-MM-DD"},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        try:
 
-            date_obj = datetime.fromisoformat(date_str).date()
+        try:
+            datetime.strptime(date_str, "%Y-%m-%d")
         except ValueError:
             return Response(
                 {"detail": "Невірний формат дати. Використовуйте YYYY-MM-DD"},
@@ -46,7 +46,12 @@ class MoodViewSet(ModelViewSet):
             )
 
 
-        mood = self.get_queryset().filter(date__date=date_obj).first()
+        mood = (
+            self.get_queryset()
+            .filter(date__startswith=date_str)
+            .first()
+        )
+
         if not mood:
             return Response(
                 {"detail": "Запис настрою на цю дату не знайдено"},

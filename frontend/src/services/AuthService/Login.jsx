@@ -1,13 +1,16 @@
-// src/services/AuthService/auth.js
 import api from '../AuthService/interceptor.jsx'
+import axios from 'axios';
 
-// логін і збереження обох токенів
+
 export const login = async (email, password) => {
     try {
-        const { data } = await api.post("/auth/api/token/", { email, password });
-        const { access, refresh } = data;
+        const { data } = await api.post(
+            "/auth/api/token/",
+            { email, password },
+            { withCredentials: true }
+        );
+        const { access } = data;
         localStorage.setItem("access_token", access);
-        localStorage.setItem("refresh_token", refresh);
         return true;
     } catch (error) {
         console.error("Помилка при вході:", error);
@@ -15,17 +18,17 @@ export const login = async (email, password) => {
     }
 };
 
-// оновлення access за допомогою refresh
-export const refreshAccessToken = async () => {
-    try {
-        const refresh = localStorage.getItem("refresh_token");
-        if (!refresh) throw new Error("Refresh-токен відсутній");
 
-        const { data } = await api.post("/auth/api/token/refresh/", { refresh });
-        const { access } = data;
-        localStorage.setItem("access_token", access);
-    } catch (error) {
-        console.error("Помилка при оновленні токена:", error);
-        throw error;
-    }
-};
+const API_BASE = 'http://127.0.0.1:8000';
+
+export async function refreshAccessToken() {
+
+    const response = await axios.post(
+        `${API_BASE}/auth/api/token/refresh/`,
+        null
+    );
+    const { access } = response.data;
+    localStorage.setItem('access_token', access);
+    console.log('[Auth] New access token saved:', access);
+    return access;
+}

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CustomTokenObtainPairView, CustomTokenRefreshView, UserRegistrationView
+from .views import CustomTokenObtainPairView, CustomTokenRefreshView, UserRegistrationView, LogoutView
 
 app_name = 'identification'
 
@@ -9,4 +9,5 @@ urlpatterns = [
     path('registration/', UserRegistrationView.as_view(), name='registration'),
     path('api/token/', CustomTokenObtainPairView.as_view(), name='login'),
     path('api/token/refresh/', CustomTokenRefreshView.as_view(), name='token_refresh'),
+    path('logout/', LogoutView.as_view(), name='logout'),
 ]

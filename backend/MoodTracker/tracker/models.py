@@ -41,10 +41,10 @@ class Mood(models.Model):
         related_name='user',
         on_delete=models.PROTECT
     )
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.CharField(max_length=120)
     note = models.TextField(max_length=300, blank=True, null=True)
 
     objects = MoodQuerySet.as_manager()
 
     def __str__(self):
-        return f'{self.mood_day} @ {self.date:%Y-%m-%d %H:%M}'
+        return f'{self.mood_day} - {self.date}'

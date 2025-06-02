@@ -1,92 +1,116 @@
-import {useState} from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import api from '../../services/AuthService/interceptor.jsx';
+import axios from "axios";
 
-import api from '../../services/AuthService/interceptor.jsx'
-function Registration() {
-    const [registrationForm, setRegistrationForm] = useState({
-        email: '',
-        password: '',
-        password2: ''
-    });
+export default function Registration() {
 
+    const API_BASE = 'http://127.0.0.1:8000';
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();  // чтобы предотвратить перезагрузку страницы
+    const navigate = useNavigate();
+    const [form, setForm] = useState({ email: '', password: '', password2: '' });
+    const [error, setError] = useState(null);
+
+    const handleChange = e => {
+        const { name, value } = e.target;
+        setForm(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = async e => {
+        const API_BASE = 'http://127.0.0.1:8000';
+        e.preventDefault();
+        setError(null);
+        if (form.password !== form.password2) {
+            setError('Паролі не співпадають');
+            return;
+        }
 
         try {
-            await api.post('auth/registration/', {
-                email: registrationForm.email,
-                password: registrationForm.password,
-                password2: registrationForm.password2,  // исправляем здесь
+            await axios.post('http://127.0.0.1:8000/auth/registration/', {
+                email: form.email,
+                password: form.password,
+                password2: form.password2,
             });
-
-            console.log('Успешная регистрация');
-        } catch (error) {
-            console.error('Ошибка при регистрации:', error);
+            navigate('/login');
+        } catch (err) {
+            setError(
+                err.response?.data?.detail ||
+                JSON.stringify(err.response?.data) ||
+                'Не вдалося зареєструватися'
+            );
         }
-    }
+    };
 
     return (
-        <div className="container mx-auto cont">
-            <form action="#" method="POST" onSubmit={handleSubmit}>
-                <div className="master_2">
-                    <h2 className="header_regist">Registration</h2>
-                    <div className="input">
+        <div className="container py-5">
+            <form
+                className="mx-auto p-4 shadow-sm bg-white"
+                style={{ maxWidth: 400 }}
+                onSubmit={handleSubmit}
+            >
+                <h2 className="text-center mb-4">Registration</h2>
 
-                        {/*<input*/}
-                        {/*    className="form-control mx-auto my-3"*/}
-                        {/*    placeholder="Прізвище"*/}
-                        {/*    type="text"*/}
-                        {/*    name="programming_area"*/}
-                        {/*    value={registrationForm.programming_area}*/}
-                        {/*    onChange={(event) => setRegistrationForm(prev => ({*/}
-                        {/*        ...prev,*/}
-                        {/*        programming_area: event.target.value*/}
-                        {/*    }))}*/}
-                        {/*/>*/}
-
-                        <input
-                            className="form-control mx-auto my-3"
-                            placeholder="Email"
-                            type="email"
-                            name="useremail"
-                            value={registrationForm.email}
-                            onChange={(event) => setRegistrationForm(prev => ({...prev, email: event.target.value}))}
-                        />
-
-                        <input
-                            className="form-control mx-auto my-3"
-                            placeholder="Password"
-                            type="password"
-                            name="password"
-                            value={registrationForm.password}
-                            onChange={(event) => setRegistrationForm(prev => ({...prev, password: event.target.value}))}
-                        />
-
-                        <input
-                            className="form-control mx-auto my-3"
-                            placeholder="Password_2"
-                            type="password"
-                            name="password"
-                            value={registrationForm.password2}
-                            onChange={(event) => setRegistrationForm(prev => ({...prev, password2: event.target.value}))}
-                        />
-
+                {error && (
+                    <div className="alert alert-danger">
+                        {error}
                     </div>
-                    <div className="md-mx-auto btn-reg">
-                        <button className='button_left' type="submit">Зареєструватися</button>
-                        <button className='button_right' type="reset">Уже маю аккаунт</button>
-                    </div>
+                )}
+
+                <div className="mb-3">
+                    <label htmlFor="email" className="form-label">Email</label>
+                    <input
+                        id="email"
+                        type="email"
+                        name="email"
+                        className="form-control"
+                        placeholder="Ваш email"
+                        value={form.email}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+
+                <div className="mb-3">
+                    <label htmlFor="password" className="form-label">Password</label>
+                    <input
+                        id="password"
+                        type="password"
+                        name="password"
+                        className="form-control"
+                        placeholder="Пароль"
+                        value={form.password}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+
+                <div className="mb-3">
+                    <label htmlFor="password2" className="form-label">Confirm Password</label>
+                    <input
+                        id="password2"
+                        type="password"
+                        name="password2"
+                        className="form-control"
+                        placeholder="Підтвердіть пароль"
+                        value={form.password2}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+
+                <div className="d-flex justify-content-between">
+                    <button type="submit" className="btn btn-primary">
+                        Зареєструватися
+                    </button>
+                    <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => navigate('/login')}
+                    >
+                        Уже маю аккаунт
+                    </button>
                 </div>
             </form>
-
-            <div>
-                {/*<h1>Surname: {registrationForm.programming_area}</h1>*/}
-                <h1>Email: {registrationForm.email}</h1>
-                <h1>Password: {registrationForm.password}</h1>
-                <h1>Password_2: {registrationForm.password2}</h1>
-            </div>
         </div>
     );
 }
-
-export default Registration;
